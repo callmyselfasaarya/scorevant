@@ -45,43 +45,48 @@
 }
 
 :root, .dark {
-  --background: 240 14% 7%; /* #0f0f14 deep charcoal */
-  --foreground: 36 21% 93%; /* #f0ede8 off-white text */
+  /* Scorevant brand: pure black base, brand gold accents */
+  --background: 0 0% 4%;        /* #0a0a0a near-black */
+  --foreground: 36 21% 93%;     /* #f0ede8 off-white text */
 
-  --card: 240 14% 11%;
+  --card: 0 0% 8%;
   --card-foreground: 36 21% 93%;
-  --card-border: 240 14% 18%;
+  --card-border: 0 0% 14%;
 
-  --popover: 240 14% 11%;
+  --popover: 0 0% 8%;
   --popover-foreground: 36 21% 93%;
-  --popover-border: 240 14% 18%;
+  --popover-border: 0 0% 14%;
 
   --primary: 36 21% 93%;
-  --primary-foreground: 240 14% 7%;
+  --primary-foreground: 0 0% 4%;
 
-  --secondary: 240 14% 15%;
+  --secondary: 0 0% 12%;
   --secondary-foreground: 36 21% 93%;
 
-  --muted: 240 14% 15%;
-  --muted-foreground: 240 5% 65%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 55%;
 
-  --accent: 240 14% 20%;
+  --accent: 0 0% 16%;
   --accent-foreground: 36 21% 93%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 36 21% 93%;
 
-  --border: 240 14% 18%;
-  --input: 240 14% 15%;
-  --ring: 240 14% 30%;
+  --border: 0 0% 14%;
+  --input: 0 0% 12%;
+  --ring: 46 91% 56%;
 
   --radius: 0.75rem;
 
   --app-font-sans: 'DM Sans', sans-serif;
   --app-font-display: 'Bebas Neue', sans-serif;
 
-  /* Default sport accent (can be overridden by JS) */
-  --sport-accent: #c8ff00; /* Tennis Lime */
+  /* Scorevant brand gold — used for logo glow and ring */
+  --brand-gold: #f5c942;
+  --brand-gold-dim: rgba(245, 201, 66, 0.2);
+
+  /* Default sport accent: Tennis Lime (overridden by JS on sport switch) */
+  --sport-accent: #c8ff00;
   --sport-accent-dim: rgba(200, 255, 0, 0.2);
 }
 

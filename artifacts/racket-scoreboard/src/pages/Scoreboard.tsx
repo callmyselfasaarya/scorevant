@@ -6,6 +6,7 @@ import { getTennisScoreDisplay } from '../lib/scoring';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, Trophy, Home as HomeIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+const scorevantLogomark = '/logo-mark.png';
 
 export default function Scoreboard() {
   const [, setLocation] = useLocation();
@@ -96,8 +97,17 @@ export default function Scoreboard() {
         <Button variant="ghost" size="icon" onClick={() => setLocation('/')} className="text-white/50 hover:text-white">
           <HomeIcon className="w-5 h-5" />
         </Button>
-        <div className="text-xs font-bold tracking-widest uppercase text-[var(--sport-accent)] glow-text">
-          {state.sport.replace('-', ' ')} • Best of {state.format.bestOf}
+        <div className="flex flex-col items-center gap-1">
+          <img
+            src={scorevantLogomark}
+            alt="Scorevant"
+            className="h-9 w-auto object-contain"
+            style={{ filter: 'drop-shadow(0 0 8px rgba(245,201,66,0.45))' }}
+            data-testid="logo-mark-scoreboard"
+          />
+          <div className="text-[10px] font-bold tracking-widest uppercase text-[var(--sport-accent)] glow-text">
+            {state.sport.replace('-', ' ')} • Best of {state.format.bestOf}
+          </div>
         </div>
         <Button variant="ghost" size="icon" onClick={undo} disabled={state.history.length === 0} className="text-white/50 hover:text-white">
           <RotateCcw className="w-5 h-5" />

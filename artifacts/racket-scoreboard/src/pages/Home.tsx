@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MoveRight } from 'lucide-react';
 import { MatchHistoryPanel } from '../components/MatchHistoryPanel';
+const scorevantFull = '/logo-full.png';
+const scorevantHorizontal = '/logo-horizontal.png';
 
 const SPORTS: { id: Sport; name: string; color: string }[] = [
   { id: 'tennis', name: 'Tennis', color: '#c8ff00' },
@@ -38,9 +40,27 @@ export default function Home() {
   return (
     <div className="min-h-screen w-full p-4 md:p-8 flex flex-col md:flex-row gap-8 items-start max-w-6xl mx-auto">
       <div className="w-full md:w-1/2 space-y-8 md:mt-12">
-        <div className="text-center md:text-left space-y-2">
-          <h1 className="text-5xl font-display uppercase tracking-widest glow-text">Court Side</h1>
-          <p className="text-muted-foreground font-sans">Settle the score.</p>
+        <div className="text-center md:text-left space-y-3">
+          {/* Full logo with player on desktop, horizontal on mobile */}
+          <div className="hidden md:flex items-center gap-4">
+            <img
+              src={scorevantFull}
+              alt="Scorevant"
+              className="h-44 w-auto object-contain"
+              style={{ filter: 'drop-shadow(0 0 22px rgba(245,201,66,0.45))' }}
+              data-testid="logo-full"
+            />
+          </div>
+          <div className="flex md:hidden justify-center">
+            <img
+              src={scorevantHorizontal}
+              alt="Scorevant"
+              className="h-16 w-auto object-contain"
+              style={{ filter: 'drop-shadow(0 0 14px rgba(245,201,66,0.5))' }}
+              data-testid="logo-horizontal"
+            />
+          </div>
+          <p className="text-muted-foreground font-sans tracking-wide text-sm">Settle the score.</p>
         </div>
 
         <div className="space-y-4">
