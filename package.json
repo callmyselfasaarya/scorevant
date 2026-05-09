@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "npm run dev --workspace=frontend",
-    "build": "npm run build --workspace=frontend",
+    "build": "npm run build --workspace=frontend && npx shx rm -rf public && npx shx cp -r Frontend/dist public",
     "preview": "npm run preview --workspace=frontend"
   },
   "workspaces": [
