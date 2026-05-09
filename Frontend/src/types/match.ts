@@ -1,6 +1,7 @@
 export type Sport = 'tennis' | 'badminton' | 'table-tennis' | 'squash' | 'pickleball';
 
 export type MatchState = {
+  matchId?: string | null;
   sport: Sport;
   player1: string;
   player2: string;

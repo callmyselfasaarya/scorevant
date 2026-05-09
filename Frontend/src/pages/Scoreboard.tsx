@@ -266,6 +266,20 @@ export default function Scoreboard() {
             <div className="text-[10px] font-black uppercase tracking-widest text-white/60">
               Scorevant Official Hub
             </div>
+            {state.matchId && (
+              <>
+                <div className="w-[1px] h-4 bg-white/10" />
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/spectate/${state.matchId}`);
+                    alert("Spectator link copied to clipboard!");
+                  }}
+                  className="text-[10px] font-black uppercase tracking-widest text-[#F4C542] hover:text-white transition-colors"
+                >
+                  Copy Live Link
+                </button>
+              </>
+            )}
           </div>
         </footer>
       </div>

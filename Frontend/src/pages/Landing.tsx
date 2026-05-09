@@ -219,16 +219,10 @@ export default function Landing() {
                 ) : (
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setLocation('/login')}
-                      className="px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-white/70 hover:text-white transition-all duration-300"
-                    >
-                      Log In
-                    </button>
-                    <button
                       onClick={() => setLocation('/register')}
                       className="px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-[#F4C542] text-black hover:bg-white transition-all duration-300 shadow-[0_0_20px_rgba(244,197,66,0.2)] hover:shadow-[0_0_30px_rgba(244,197,66,0.4)]"
                     >
-                      Sign Up
+                      Get Started
                     </button>
                   </div>
                 )}

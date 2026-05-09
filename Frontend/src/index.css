@@ -40,6 +40,10 @@
   --color-neon-pink: #F4C542;
   --color-neon-green: #FFFFFF;
 
+  --color-gold-primary: #F4C542;
+  --color-gold-soft: rgba(244, 197, 66, 0.2);
+  --color-gold-glow: rgba(244, 197, 66, 0.4);
+
   --font-sans: var(--app-font-sans);
   --font-display: var(--app-font-display);
 
@@ -139,6 +143,23 @@
   -webkit-backdrop-filter: blur(40px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-contrast: more) {
+  .glass-panel,
+  .liquid-glass,
+  .glass-panel-heavy {
+    background: #000000;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 2px solid #FFFFFF;
+    box-shadow: none;
+  }
+  
+  .glow-border {
+    border: 2px solid var(--sport-accent);
+    box-shadow: none;
+  }
 }
 
 .glow-text {

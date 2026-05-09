@@ -75,8 +75,23 @@ export default function TournamentDetails() {
                 <h3 className="font-semibold text-lg border-b pb-2">Round {roundNum}</h3>
                 <div className="flex flex-col gap-6 flex-1 justify-center">
                   {roundMatches.map(match => (
-                    <Card key={match._id} className={`w-full ${match.status === 'Live' ? 'border-primary shadow-md' : ''}`}>
-                      <CardContent className="p-4 flex flex-col gap-2">
+                    <Card 
+                      key={match._id} 
+                      className={`w-full group ${match.status === 'Live' ? 'border-primary shadow-md' : ''} ${match.status !== 'Completed' && match.entrant1Id && match.entrant2Id ? 'cursor-pointer hover:border-primary transition-colors' : ''}`}
+                      onClick={() => {
+                        if (match.status !== 'Completed' && match.entrant1Id && match.entrant2Id) {
+                          sessionStorage.setItem('match_setup', JSON.stringify({
+                            id: match._id,
+                            sport: tournament.sportType.toLowerCase().replace(' ', '-'),
+                            player1: getEntrantName(match.entrant1Id),
+                            player2: getEntrantName(match.entrant2Id),
+                            bestOf: tournament.maxSets || 3
+                          }));
+                          setLocation('/scoreboard');
+                        }
+                      }}
+                    >
+                      <CardContent className="p-4 flex flex-col gap-2 relative">
                         <div className="flex justify-between items-center text-xs text-muted-foreground mb-1">
                           <span>Match {match.matchNumber}</span>
                           <Badge variant={match.status === 'Completed' ? 'secondary' : match.status === 'Live' ? 'default' : 'outline'}>
@@ -89,6 +104,13 @@ export default function TournamentDetails() {
                         <div className={`p-2 rounded flex justify-between ${match.winnerId === (typeof match.entrant2Id === 'object' ? (match.entrant2Id as any)._id : match.entrant2Id) ? 'bg-primary/10 font-bold' : 'bg-muted/50'}`}>
                           <span>{getEntrantName(match.entrant2Id)}</span>
                         </div>
+                        {match.status !== 'Completed' && match.entrant1Id && match.entrant2Id && (
+                           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
+                             <Button variant="default" size="sm">
+                               <Play className="w-4 h-4 mr-2" /> Officiate Match
+                             </Button>
+                           </div>
+                        )}
                       </CardContent>
                     </Card>
                   ))}

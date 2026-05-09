@@ -1,12 +1,14 @@
-import { useReducer, useCallback } from 'react';
+import { useReducer, useCallback, useEffect, useRef } from 'react';
 import { MatchState, Sport } from '../types/match';
 import { scorePoint } from '../lib/scoring';
+import { supabase } from '../lib/supabase';
 
 type MatchAction = 
-  | { type: 'START_MATCH'; payload: { sport: Sport, player1: string, player2: string, bestOf: 3 | 5 } }
+  | { type: 'START_MATCH'; payload: { id: string, sport: Sport, player1: string, player2: string, bestOf: 3 | 5 } }
   | { type: 'SCORE_POINT'; payload: 1 | 2 }
   | { type: 'UNDO' }
-  | { type: 'END_MATCH' };
+  | { type: 'END_MATCH' }
+  | { type: 'SYNC_STATE'; payload: MatchState };
 
 const initialState: MatchState = {
   sport: 'tennis',
@@ -19,7 +21,8 @@ const initialState: MatchState = {
   p2Sets: 0,
   status: 'setup',
   winner: null,
-  history: []
+  history: [],
+  matchId: null
 };
 
 function matchReducer(state: MatchState, action: MatchAction): MatchState {
@@ -27,6 +30,7 @@ function matchReducer(state: MatchState, action: MatchAction): MatchState {
     case 'START_MATCH':
       return {
         ...initialState,
+        matchId: action.payload.id,
         sport: action.payload.sport,
         player1: action.payload.player1,
         player2: action.payload.player2,
@@ -67,21 +71,16 @@ function matchReducer(state: MatchState, action: MatchAction): MatchState {
       };
 
       if (result.gameWon) {
-        // Record completed set
         newState.sets = [...state.sets, { p1: result.p1Points, p2: result.p2Points }];
-        
         if (result.gameWon === 1) newState.p1Sets += 1;
         else newState.p2Sets += 1;
-
         newState.currentGame = { p1Points: 0, p2Points: 0, server: result.server };
-
         const setsNeeded = Math.ceil(state.format.bestOf / 2);
         if (newState.p1Sets >= setsNeeded || newState.p2Sets >= setsNeeded) {
           newState.status = 'finished';
           newState.winner = newState.p1Sets >= setsNeeded ? 1 : 2;
         }
       }
-
       return newState;
     }
 
@@ -102,17 +101,72 @@ function matchReducer(state: MatchState, action: MatchAction): MatchState {
 
     case 'END_MATCH':
       return { ...state, status: 'finished' };
+      
+    case 'SYNC_STATE':
+      return { ...action.payload };
 
     default:
       return state;
   }
 }
 
-export function useMatchState() {
-  const [state, dispatch] = useReducer(matchReducer, initialState);
+export function useMatchState(spectatorMode: boolean = false, matchIdToSpectate?: string) {
+  // Offline persistence: load from local storage
+  const [state, dispatch] = useReducer(matchReducer, initialState, (initial) => {
+    if (spectatorMode) return initial;
+    try {
+      const saved = localStorage.getItem('scorevant_active_match');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error("Failed to load match state");
+    }
+    return initial;
+  });
 
-  const startMatch = useCallback((payload: { sport: Sport, player1: string, player2: string, bestOf: 3 | 5 }) => {
-    dispatch({ type: 'START_MATCH', payload });
+  const channelRef = useRef<any>(null);
+
+  // Setup Realtime Synchronization
+  useEffect(() => {
+    const activeMatchId = spectatorMode ? matchIdToSpectate : state.matchId;
+    if (!activeMatchId) return;
+
+    const channel = supabase.channel(`match:${activeMatchId}`);
+    channelRef.current = channel;
+
+    if (spectatorMode) {
+      channel.on('broadcast', { event: 'match_update' }, (payload) => {
+        dispatch({ type: 'SYNC_STATE', payload: payload.payload });
+      }).subscribe();
+    } else {
+      channel.subscribe();
+    }
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [state.matchId, spectatorMode, matchIdToSpectate]);
+
+  // Persist state & Broadcast changes
+  useEffect(() => {
+    if (!spectatorMode && state.status !== 'setup') {
+      localStorage.setItem('scorevant_active_match', JSON.stringify(state));
+      
+      if (channelRef.current && state.matchId) {
+        channelRef.current.send({
+          type: 'broadcast',
+          event: 'match_update',
+          payload: state
+        });
+      }
+    }
+    
+    if (!spectatorMode && state.status === 'finished') {
+      localStorage.removeItem('scorevant_active_match');
+    }
+  }, [state, spectatorMode]);
+
+  const startMatch = useCallback((payload: { id?: string, sport: Sport, player1: string, player2: string, bestOf: 3 | 5 }) => {
+    dispatch({ type: 'START_MATCH', payload: { ...payload, id: payload.id || crypto.randomUUID() } });
   }, []);
 
   const scoreP1 = useCallback(() => dispatch({ type: 'SCORE_POINT', payload: 1 }), []);
