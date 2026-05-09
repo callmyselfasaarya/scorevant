@@ -328,10 +328,6 @@ export default function Landing() {
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </MagneticButton>
-            <button className="px-10 py-5 rounded-2xl border border-white/10 hover:border-white/30 text-white font-bold uppercase tracking-widest text-sm hover:bg-white/5 transition-all duration-300 flex items-center gap-3">
-              <Play className="w-4 h-4 fill-white" />
-              View Demo
-            </button>
           </motion.div>
 
           {/* Stats / Trust */}
@@ -666,7 +662,7 @@ export default function Landing() {
             <div className="space-y-4">
               <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F4C542]">Resources</div>
               <div className="flex flex-col gap-2">
-                <a href="#" className="text-xs text-white/30 hover:text-white transition-colors">Documentation</a>
+                <button onClick={() => setLocation('/docs')} className="text-xs text-left text-white/30 hover:text-white transition-colors">Documentation</button>
                 <a href="#" className="text-xs text-white/30 hover:text-white transition-colors">API Reference</a>
                 <a href="#" className="text-xs text-white/30 hover:text-white transition-colors">Support</a>
               </div>

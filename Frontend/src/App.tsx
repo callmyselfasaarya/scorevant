@@ -21,6 +21,7 @@ const Register = lazy(() => import("./pages/auth/Register"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 const Spectate = lazy(() => import("@/pages/Spectate"));
+const Documentation = lazy(() => import("@/pages/Documentation"));
 
 const queryClient = new QueryClient();
 
@@ -94,6 +95,11 @@ function Router() {
           <Route path="/spectate/:id">
             <PageTransition>
               <Spectate />
+            </PageTransition>
+          </Route>
+          <Route path="/docs">
+            <PageTransition>
+              <Documentation />
             </PageTransition>
           </Route>
           <Route>

@@ -8,7 +8,7 @@
     "preview": "npm run preview --workspace=frontend"
   },
   "workspaces": [
-    "frontend"
+    "Frontend"
   ],
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
