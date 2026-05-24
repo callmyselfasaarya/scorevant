@@ -1,7 +1,7 @@
 import { useReducer, useCallback, useEffect, useRef } from 'react';
 import { MatchState, Sport } from '../types/match';
 import { scorePoint } from '../lib/scoring';
-import { supabase } from '../lib/supabase';
+import { getSupabaseClient } from '../lib/supabase';
 
 type MatchAction = 
   | { type: 'START_MATCH'; payload: { id: string, sport: Sport, player1: string, player2: string, bestOf: 3 | 5 } }
@@ -19,6 +19,8 @@ const initialState: MatchState = {
   currentGame: { p1Points: 0, p2Points: 0, server: 1 },
   p1Sets: 0,
   p2Sets: 0,
+  p1Games: 0,
+  p2Games: 0,
   status: 'setup',
   winner: null,
   history: [],
@@ -46,7 +48,9 @@ function matchReducer(state: MatchState, action: MatchAction): MatchState {
         currentGame: { ...state.currentGame },
         sets: [...state.sets],
         p1Sets: state.p1Sets,
-        p2Sets: state.p2Sets
+        p2Sets: state.p2Sets,
+        p1Games: state.p1Games,
+        p2Games: state.p2Games
       };
 
       const result = scorePoint(
@@ -55,8 +59,8 @@ function matchReducer(state: MatchState, action: MatchAction): MatchState {
         state.currentGame.p2Points,
         scorer,
         state.currentGame.server,
-        state.p1Sets,
-        state.p2Sets,
+        state.p1Games,
+        state.p2Games,
         state.format.bestOf
       );
 
@@ -71,14 +75,61 @@ function matchReducer(state: MatchState, action: MatchAction): MatchState {
       };
 
       if (result.gameWon) {
-        newState.sets = [...state.sets, { p1: result.p1Points, p2: result.p2Points }];
-        if (result.gameWon === 1) newState.p1Sets += 1;
-        else newState.p2Sets += 1;
-        newState.currentGame = { p1Points: 0, p2Points: 0, server: result.server };
-        const setsNeeded = Math.ceil(state.format.bestOf / 2);
-        if (newState.p1Sets >= setsNeeded || newState.p2Sets >= setsNeeded) {
-          newState.status = 'finished';
-          newState.winner = newState.p1Sets >= setsNeeded ? 1 : 2;
+        if (state.sport === 'tennis') {
+          // Increment set games
+          if (result.gameWon === 1) newState.p1Games += 1;
+          else newState.p2Games += 1;
+
+          // Reset points for the next game
+          newState.currentGame = { p1Points: 0, p2Points: 0, server: result.server };
+
+          // Check if set is won:
+          // A set is won when a player reaches 6 games and leads by 2, OR reaches 7 games
+          const p1G = newState.p1Games;
+          const p2G = newState.p2Games;
+          let isSetWon = false;
+          let setWinner: 1 | 2 | null = null;
+
+          if ((p1G >= 6 && p1G - p2G >= 2) || p1G === 7) {
+            isSetWon = true;
+            setWinner = 1;
+          } else if ((p2G >= 6 && p2G - p1G >= 2) || p2G === 7) {
+            isSetWon = true;
+            setWinner = 2;
+          }
+
+          if (isSetWon && setWinner) {
+            // Append set score to sets array
+            newState.sets = [...state.sets, { p1: p1G, p2: p2G }];
+            
+            // Increment overall sets won
+            if (setWinner === 1) newState.p1Sets += 1;
+            else newState.p2Sets += 1;
+
+            // Reset set games for the next set
+            newState.p1Games = 0;
+            newState.p2Games = 0;
+
+            // Check if match is won
+            const setsNeeded = Math.ceil(state.format.bestOf / 2);
+            if (newState.p1Sets >= setsNeeded || newState.p2Sets >= setsNeeded) {
+              newState.status = 'finished';
+              newState.winner = newState.p1Sets >= setsNeeded ? 1 : 2;
+            }
+          }
+        } else {
+          // Rally scoring sports: gameWon directly increments sets won
+          newState.sets = [...state.sets, { p1: result.p1Points, p2: result.p2Points }];
+          if (result.gameWon === 1) newState.p1Sets += 1;
+          else newState.p2Sets += 1;
+          
+          newState.currentGame = { p1Points: 0, p2Points: 0, server: result.server };
+          
+          const setsNeeded = Math.ceil(state.format.bestOf / 2);
+          if (newState.p1Sets >= setsNeeded || newState.p2Sets >= setsNeeded) {
+            newState.status = 'finished';
+            newState.winner = newState.p1Sets >= setsNeeded ? 1 : 2;
+          }
         }
       }
       return newState;
@@ -93,6 +144,8 @@ function matchReducer(state: MatchState, action: MatchAction): MatchState {
         sets: lastState.sets,
         p1Sets: lastState.p1Sets,
         p2Sets: lastState.p2Sets,
+        p1Games: lastState.p1Games,
+        p2Games: lastState.p2Games,
         status: 'playing',
         winner: null,
         history: state.history.slice(0, -1)
@@ -129,6 +182,9 @@ export function useMatchState(spectatorMode: boolean = false, matchIdToSpectate?
   useEffect(() => {
     const activeMatchId = spectatorMode ? matchIdToSpectate : state.matchId;
     if (!activeMatchId) return;
+
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
 
     const channel = supabase.channel(`match:${activeMatchId}`);
     channelRef.current = channel;

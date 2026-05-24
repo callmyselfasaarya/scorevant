@@ -61,11 +61,11 @@ export class CourtService {
       throw new BadRequestException('Match is not in Queue status');
 
     court.status = 'In Use';
-    court.currentMatchId = match._id;
+    court.currentMatchId = match._id.toString();
     await court.save();
 
     match.status = 'Live';
-    match.courtId = court._id;
+    match.courtId = court._id.toString();
     await match.save();
 
     return { court, match };

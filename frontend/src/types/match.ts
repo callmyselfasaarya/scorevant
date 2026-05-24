@@ -10,6 +10,8 @@ export type MatchState = {
   currentGame: { p1Points: number; p2Points: number; server: 1 | 2 };
   p1Sets: number;
   p2Sets: number;
+  p1Games: number;
+  p2Games: number;
   status: 'setup' | 'playing' | 'finished';
   winner: 1 | 2 | null;
   history: Array<{ 
@@ -17,6 +19,8 @@ export type MatchState = {
     sets: Array<{ p1: number; p2: number }>;
     p1Sets: number;
     p2Sets: number;
+    p1Games: number;
+    p2Games: number;
   }>;
 };
 

@@ -66,7 +66,7 @@ export default function Scoreboard() {
   let p1Display = state.currentGame.p1Points.toString();
   let p2Display = state.currentGame.p2Points.toString();
 
-  if (isTennis && state.p1Sets !== 6 && state.p2Sets !== 6) { 
+  if (isTennis) { 
     [p1Display, p2Display] = getTennisScoreDisplay(state.currentGame.p1Points, state.currentGame.p2Points);
   }
 
@@ -162,6 +162,24 @@ export default function Scoreboard() {
             <RotateCcw className="w-5 h-5 text-white/50" />
           </button>
         </header>
+
+        {isTennis && (
+          <div className="w-full flex justify-center mb-6">
+            <div className="glass-panel px-6 py-3 rounded-2xl border border-white/5 flex items-center gap-4 text-xs font-black uppercase tracking-widest">
+              <span className="text-white/30">Sets</span>
+              <div className="flex gap-3">
+                {state.sets.map((set, idx) => (
+                  <div key={idx} className="bg-white/5 px-2.5 py-1 rounded-lg border border-white/5 text-white/60">
+                    {set.p1}-{set.p2}
+                  </div>
+                ))}
+                <div className="bg-[#F4C542]/10 px-2.5 py-1 rounded-lg border border-[#F4C542]/20 text-[#F4C542] animate-pulse">
+                  {state.p1Games}-{state.p2Games}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Score Area */}
         <div className="flex-1 flex flex-col md:flex-row gap-6 md:gap-10">

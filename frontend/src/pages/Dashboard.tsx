@@ -10,7 +10,8 @@ export default function Dashboard() {
   // Placeholder data for recent matches
   const recentMatches: any[] = [];
 
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Official';
+  const userName =
+    user?.fullName || user?.email?.split('@')[0] || 'Official';
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-[#F4C542]/30 pt-24 px-6 md:px-12 pb-20">

@@ -3,6 +3,7 @@ import { useRoute } from "wouter";
 import { useMatchState } from "../hooks/useMatchState";
 import { ScoreboardCard } from "../components/ui/scoreboard-card";
 import { motion } from "framer-motion";
+import { getTennisScoreDisplay } from "../lib/scoring";
 
 export default function Spectate() {
   const [, params] = useRoute("/spectate/:id");
@@ -27,6 +28,17 @@ export default function Spectate() {
     );
   }
 
+  const isTennis = state.sport === "tennis";
+  let p1Display: string | number = state.currentGame.p1Points;
+  let p2Display: string | number = state.currentGame.p2Points;
+
+  if (isTennis) {
+    [p1Display, p2Display] = getTennisScoreDisplay(
+      state.currentGame.p1Points,
+      state.currentGame.p2Points
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black flex flex-col p-4 md:p-10 relative overflow-hidden">
       <div className="absolute inset-0 bg-gold-primary/5 blur-[120px] -z-10" />
@@ -44,8 +56,8 @@ export default function Spectate() {
         <ScoreboardCard
           playerOneName={state.player1}
           playerTwoName={state.player2}
-          playerOneScore={state.currentGame.p1Points}
-          playerTwoScore={state.currentGame.p2Points}
+          playerOneScore={p1Display}
+          playerTwoScore={p2Display}
           isLive={state.status === "playing"}
         />
 
@@ -66,6 +78,21 @@ export default function Spectate() {
               </span>
             </motion.div>
           ))}
+          {isTennis && state.status === "playing" && (
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex flex-col items-center bg-gold-primary/10 px-4 py-2 rounded-xl border border-gold-primary/20 animate-pulse"
+            >
+              <span className="text-gold-primary font-bold">
+                {state.p1Games}
+              </span>
+              <span className="w-4 h-[2px] bg-gold-primary/20 my-1" />
+              <span className="text-gold-primary font-bold">
+                {state.p2Games}
+              </span>
+            </motion.div>
+          )}
         </div>
         
         {state.status === 'finished' && (
@@ -74,7 +101,7 @@ export default function Spectate() {
              animate={{ opacity: 1, y: 0 }}
              className="text-center p-6 bg-gold-primary/10 border border-gold-primary/20 rounded-2xl"
            >
-             <h2 className="text-2xl font-display tracking-widest text-gold-primary uppercase">
+             <h2 className="text-2xl font-display tracking-widest text-[#F4C542] uppercase">
                Match Finished
              </h2>
              <p className="text-white mt-2">Winner: {state.winner === 1 ? state.player1 : state.player2}</p>

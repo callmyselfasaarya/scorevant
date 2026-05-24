@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { getAccessToken } from './auth-api';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -42,8 +42,7 @@ export interface Court {
 }
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
+  const token = getAccessToken();
 
   const headers = new Headers(options.headers || {});
   headers.set('Content-Type', 'application/json');

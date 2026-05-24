@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "npm run dev --workspace=frontend",
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run start:dev\"",
     "build": "npm run build --workspace=frontend",
     "preview": "npm run preview --workspace=frontend"
   },
@@ -13,5 +13,8 @@
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

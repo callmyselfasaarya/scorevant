@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ component: Component }) => {
-  const { session, loading } = useAuth();
+  const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
 
   if (loading) {
@@ -20,7 +20,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ component: Compo
     );
   }
 
-  if (!session) {
+  if (!user) {
     setLocation('/login');
     return null;
   }

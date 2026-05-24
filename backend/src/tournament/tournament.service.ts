@@ -129,10 +129,10 @@ export class TournamentService {
           const prevMatch1 = previousRoundMatches[i * 2];
           const prevMatch2 = previousRoundMatches[i * 2 + 1];
 
-          prevMatch1.nextMatchId = match._id;
+          prevMatch1.nextMatchId = match._id.toString();
           await prevMatch1.save();
 
-          prevMatch2.nextMatchId = match._id;
+          prevMatch2.nextMatchId = match._id.toString();
           await prevMatch2.save();
 
           // Auto advance if previous match was already a BYE (completed)

@@ -6,8 +6,8 @@ import { AnimatedCounter } from "./animated-counter";
 interface ScoreboardCardProps {
   playerOneName: string;
   playerTwoName: string;
-  playerOneScore: number;
-  playerTwoScore: number;
+  playerOneScore: number | string;
+  playerTwoScore: number | string;
   isLive?: boolean;
 }
 
@@ -43,7 +43,11 @@ export const ScoreboardCard: React.FC<ScoreboardCardProps> = ({
         <div className="text-center space-y-2">
           <p className="text-sm text-white/70 uppercase tracking-wider truncate" aria-label={`Player 1: ${playerOneName}`}>{playerOneName}</p>
           <div className="text-5xl font-display text-white" aria-label={`Score: ${playerOneScore}`}>
-            <AnimatedCounter value={playerOneScore} />
+            {typeof playerOneScore === "number" ? (
+              <AnimatedCounter value={playerOneScore} />
+            ) : (
+              <span>{playerOneScore}</span>
+            )}
           </div>
         </div>
         
@@ -54,7 +58,11 @@ export const ScoreboardCard: React.FC<ScoreboardCardProps> = ({
         <div className="text-center space-y-2">
           <p className="text-sm text-white/70 uppercase tracking-wider truncate" aria-label={`Player 2: ${playerTwoName}`}>{playerTwoName}</p>
           <div className="text-5xl font-display text-white" aria-label={`Score: ${playerTwoScore}`}>
-            <AnimatedCounter value={playerTwoScore} />
+            {typeof playerTwoScore === "number" ? (
+              <AnimatedCounter value={playerTwoScore} />
+            ) : (
+              <span>{playerTwoScore}</span>
+            )}
           </div>
         </div>
       </div>

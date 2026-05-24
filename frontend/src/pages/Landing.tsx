@@ -31,7 +31,7 @@ const SCORE_TICKS = [
 
 export default function Landing() {
   const [, setLocation] = useLocation();
-  const { session, user, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scoreIdx, setScoreIdx] = useState(0);
@@ -172,7 +172,7 @@ export default function Landing() {
               </a>
               
               <div className="hidden sm:flex gap-3 relative">
-                {session ? (
+                {user ? (
                   <div className="relative">
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -182,7 +182,7 @@ export default function Landing() {
                         <User className="w-3.5 h-3.5 text-[#F4C542]" />
                       </div>
                       <span className="text-xs font-bold text-white/80 group-hover:text-white transition-colors">
-                        {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Official'}
+                        {user?.fullName?.split(' ')[0] || user?.email?.split('@')[0] || 'Official'}
                       </span>
                       <ChevronDown className={`w-3 h-3 text-white/40 transition-transform duration-300 ${userMenuOpen ? 'rotate-180' : ''}`} />
                     </button>
@@ -258,7 +258,7 @@ export default function Landing() {
                   </a>
                 ))}
                 <button
-                  onClick={() => setLocation(session ? '/tournaments' : '/login')}
+                  onClick={() => setLocation(user ? '/tournaments' : '/login')}
                   className="mt-4 w-full py-4 rounded-xl bg-[#F4C542] text-black font-black uppercase tracking-tighter"
                 >
                   Start Match
@@ -321,7 +321,7 @@ export default function Landing() {
           >
             <MagneticButton>
               <button
-                onClick={() => setLocation(session ? '/tournaments' : '/login')}
+                onClick={() => setLocation(user ? '/tournaments' : '/login')}
                 className="group relative px-10 py-5 rounded-2xl bg-[#F4C542] text-black font-black uppercase tracking-widest text-sm hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(244,197,66,0.3)] hover:shadow-[0_0_50px_rgba(244,197,66,0.6)] flex items-center gap-3"
               >
                 Start a Match
@@ -539,7 +539,7 @@ export default function Landing() {
               <h3 className="text-4xl md:text-6xl font-black tracking-tighter">Master Every <br /> <span className="text-white/40">Racket Sport.</span></h3>
             </FadeIn>
             <FadeIn direction="left">
-              <button onClick={() => setLocation(session ? '/tournaments' : '/login')} className="px-8 py-4 rounded-full bg-white/5 border border-white/10 hover:border-[#F4C542] text-xs font-black uppercase tracking-widest transition-all">
+              <button onClick={() => setLocation(user ? '/tournaments' : '/login')} className="px-8 py-4 rounded-full bg-white/5 border border-white/10 hover:border-[#F4C542] text-xs font-black uppercase tracking-widest transition-all">
                 Configure Your Game
               </button>
             </FadeIn>
@@ -588,7 +588,7 @@ export default function Landing() {
             </FadeIn>
             <FadeIn direction="left">
               <button
-                onClick={() => setLocation(session ? '/tournaments' : '/login')}
+                onClick={() => setLocation(user ? '/tournaments' : '/login')}
                 className="px-8 py-4 rounded-full bg-white/5 border border-white/10 hover:border-[#F4C542] text-xs font-black uppercase tracking-widest transition-all"
               >
                 Start Recording
