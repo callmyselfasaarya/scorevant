@@ -1,11 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Model, type Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Tournament, TournamentDocument } from '../schemas/tournament.schema';
 import { Entrant, EntrantDocument } from '../schemas/entrant.schema';
 import {
@@ -16,11 +11,9 @@ import {
 @Injectable()
 export class TournamentService {
   constructor(
-    @InjectModel(Tournament.name)
-    private tournamentModel: Model<TournamentDocument>,
+    @InjectModel(Tournament.name) private tournamentModel: Model<TournamentDocument>,
     @InjectModel(Entrant.name) private entrantModel: Model<EntrantDocument>,
-    @InjectModel(TournamentMatch.name)
-    private matchModel: Model<TournamentMatchDocument>,
+    @InjectModel(TournamentMatch.name) private matchModel: Model<TournamentMatchDocument>,
   ) {}
 
   async createTournament(
@@ -46,10 +39,13 @@ export class TournamentService {
       tournamentId: tournament._id,
     }));
     await this.entrantModel.insertMany(entrantDocs);
-
     return tournament;
   }
 
+  /**
+   * Generates a tournament bracket for the given tournament ID.
+   * It creates matches for each round, handling byes automatically.
+   */
   async generateBracket(tournamentId: string) {
     const tournament = await this.tournamentModel.findById(tournamentId);
     if (!tournament) throw new NotFoundException('Tournament not found');
@@ -61,46 +57,43 @@ export class TournamentService {
     const numEntrants = entrants.length;
     if (numEntrants < 2) throw new BadRequestException('Not enough entrants');
 
-    // Calculate power of 2
+    // Determine the next power of two to calculate required byes
     let pow = 1;
     while (pow < numEntrants) pow *= 2;
     const numByes = pow - numEntrants;
 
-    // We need 'pow' slots.
-    // For simplicity in this implementation, we just mix entrants and nulls (byes)
+    // Build initial slots: entrants followed by null placeholders for byes
     const slots: (EntrantDocument | null)[] = [...entrants];
-    for (let i = 0; i < numByes; i++) {
-      slots.push(null); // null represents a BYE
-    }
+    for (let i = 0; i < numByes; i++) slots.push(null);
 
-    const currentRoundEntrants = slots;
+    let currentRoundEntrants = slots;
     let roundNumber = 1;
-    let currentRoundMatches: TournamentMatchDocument[] = [];
     let previousRoundMatches: TournamentMatchDocument[] = [];
 
-    // Delete existing matches for this tournament if regenerating
+    // Clean any existing matches for this tournament
     await this.matchModel.deleteMany({ tournamentId });
 
-    while (currentRoundEntrants.length > 1 || previousRoundMatches.length > 1) {
+    while (currentRoundEntrants.filter((e) => e).length > 1) {
       const isFirstRound = roundNumber === 1;
       const numMatches = isFirstRound
         ? currentRoundEntrants.length / 2
         : previousRoundMatches.length / 2;
-      currentRoundMatches = [];
+
+      const currentRoundMatches: TournamentMatchDocument[] = [];
 
       for (let i = 0; i < numMatches; i++) {
-        let entrant1Id = null;
-        let entrant2Id = null;
-        let status = 'Upcoming';
-        let winnerId = null;
+        let entrant1Id: string | null = null;
+        let entrant2Id: string | null = null;
+        let winnerId: string | null = null;
+        let status: string = 'Upcoming';
 
         if (isFirstRound) {
           const e1 = currentRoundEntrants[i * 2];
           const e2 = currentRoundEntrants[i * 2 + 1];
-          entrant1Id = e1 ? e1._id : null;
-          entrant2Id = e2 ? e2._id : null;
+          entrant1Id = e1 ? e1._id.toString() : null;
+          entrant2Id = e2 ? e2._id.toString() : null;
 
-          // If one is a BYE, the other auto-advances
+          // Auto‑advance BYE slots
           if (entrant1Id && !entrant2Id) {
             winnerId = entrant1Id;
             status = 'Completed';
@@ -108,8 +101,15 @@ export class TournamentService {
             winnerId = entrant2Id;
             status = 'Completed';
           } else {
-            status = 'Queue'; // Ready to be assigned a court
+            status = 'Queue';
           }
+        } else {
+          // For later rounds, entrant IDs are resolved from previous matches
+          const prevMatch1 = previousRoundMatches[i * 2];
+          const prevMatch2 = previousRoundMatches[i * 2 + 1];
+          if (prevMatch1?.winnerId) entrant1Id = prevMatch1.winnerId;
+          if (prevMatch2?.winnerId) entrant2Id = prevMatch2.winnerId;
+          status = entrant1Id && entrant2Id ? 'Queue' : 'Upcoming';
         }
 
         const match = new this.matchModel({
@@ -124,37 +124,35 @@ export class TournamentService {
         await match.save();
         currentRoundMatches.push(match);
 
-        // Link previous round matches to this match
+        // Link previous matches to this match for winner propagation
         if (!isFirstRound) {
           const prevMatch1 = previousRoundMatches[i * 2];
           const prevMatch2 = previousRoundMatches[i * 2 + 1];
-
-          prevMatch1.nextMatchId = match._id.toString();
-          await prevMatch1.save();
-
-          prevMatch2.nextMatchId = match._id.toString();
-          await prevMatch2.save();
-
-          // Auto advance if previous match was already a BYE (completed)
-          if (prevMatch1.winnerId) match.entrant1Id = prevMatch1.winnerId;
-          if (prevMatch2.winnerId) match.entrant2Id = prevMatch2.winnerId;
-
-          if (match.entrant1Id && match.entrant2Id) {
-            match.status = 'Queue';
-          } else if (match.entrant1Id || match.entrant2Id) {
-            // Not fully ready, but if both were byes (rare), handle it.
+          if (prevMatch1) {
+            prevMatch1.nextMatchId = match._id.toString();
+            await prevMatch1.save();
           }
-          await match.save();
+          if (prevMatch2) {
+            prevMatch2.nextMatchId = match._id.toString();
+            await prevMatch2.save();
+          }
         }
       }
 
+      // Prepare entrants for the next round based on winners or completed BYE matches
+      const nextRoundEntrants = currentRoundMatches.map((m) => {
+        if (m.winnerId) return { _id: m.winnerId } as any;
+        if (m.status === 'Completed' && m.winnerId) return { _id: m.winnerId } as any;
+        return null;
+      });
+
       previousRoundMatches = currentRoundMatches;
+      currentRoundEntrants = nextRoundEntrants;
       roundNumber++;
     }
 
     tournament.status = 'Live';
     await tournament.save();
-
     return { message: 'Bracket generated successfully' };
   }
 
@@ -192,12 +190,10 @@ export class TournamentService {
       match.winnerId = data.winnerId;
       match.status = 'Completed';
 
-      // Advance winner to next match
+      // Advance winner to the next match if it exists
       if (match.nextMatchId) {
         const nextMatch = await this.matchModel.findById(match.nextMatchId);
         if (nextMatch) {
-          // Find which slot to put the winner in based on prev match positions
-          // To be safe, just check which one is null
           if (!nextMatch.entrant1Id) {
             nextMatch.entrant1Id = match.winnerId;
           } else if (!nextMatch.entrant2Id) {

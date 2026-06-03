@@ -36,6 +36,7 @@ export default function Landing() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scoreIdx, setScoreIdx] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -205,7 +206,7 @@ export default function Landing() {
                               Dashboard
                             </button>
                             <button
-                              onClick={() => { logout(); setUserMenuOpen(false); }}
+                              onClick={() => { setShowLogoutModal(true); setUserMenuOpen(false); }}
                               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-all"
                             >
                               <LogOut className="w-4 h-4" />
@@ -678,6 +679,54 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {showLogoutModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="w-full max-w-sm overflow-hidden border rounded-3xl border-white/10 bg-zinc-900 shadow-2xl"
+            >
+              <div className="p-6 text-center space-y-6">
+                <div className="mx-auto w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+                  <LogOut className="w-6 h-6 text-red-500" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold text-white">Log Out</h3>
+                  <p className="text-sm text-white/60">
+                    Are you sure you want to log out of your account?
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowLogoutModal(false)}
+                    className="flex-1 px-4 py-3 text-xs font-bold uppercase tracking-widest text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setShowLogoutModal(false);
+                    }}
+                    className="flex-1 px-4 py-3 text-xs font-bold uppercase tracking-widest text-white bg-red-500/80 hover:bg-red-500 rounded-xl transition-all"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Glassmorphism Styles */}
       <style>{`

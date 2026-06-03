@@ -46,6 +46,11 @@ export default function TournamentDetails() {
     return entrantOrId.name || "TBD";
   };
 
+  const getEntrantId = (entrantOrId: any) => {
+    if (!entrantOrId) return null;
+    return typeof entrantOrId === 'object' ? entrantOrId._id : entrantOrId;
+  };
+
   return (
     <div className="container mx-auto py-8">
       <Button variant="ghost" onClick={() => setLocation("/tournaments")} className="mb-4">
@@ -98,10 +103,10 @@ export default function TournamentDetails() {
                             {match.status}
                           </Badge>
                         </div>
-                        <div className={`p-2 rounded flex justify-between ${match.winnerId === (typeof match.entrant1Id === 'object' ? (match.entrant1Id as any)._id : match.entrant1Id) ? 'bg-primary/10 font-bold' : 'bg-muted/50'}`}>
+                        <div className={`p-2 rounded flex justify-between ${match.winnerId && match.winnerId === getEntrantId(match.entrant1Id) ? 'bg-primary/10 font-bold' : 'bg-muted/50'}`}>
                           <span>{getEntrantName(match.entrant1Id)}</span>
                         </div>
-                        <div className={`p-2 rounded flex justify-between ${match.winnerId === (typeof match.entrant2Id === 'object' ? (match.entrant2Id as any)._id : match.entrant2Id) ? 'bg-primary/10 font-bold' : 'bg-muted/50'}`}>
+                        <div className={`p-2 rounded flex justify-between ${match.winnerId && match.winnerId === getEntrantId(match.entrant2Id) ? 'bg-primary/10 font-bold' : 'bg-muted/50'}`}>
                           <span>{getEntrantName(match.entrant2Id)}</span>
                         </div>
                         {match.status !== 'Completed' && match.entrant1Id && match.entrant2Id && (
