@@ -1,134 +1,428 @@
 # Scorevant
 
-Scorevant is a professional-grade officiating assistant, tournament manager, and live scoring platform designed for racket sports. It provides a sleek, high-performance interface for tracking matches in Badminton, Tennis, Table Tennis, Squash, and Pickleball, ensuring precision and providing a premium, realtime experience for officials, players, and spectators alike.
+Scorevant is a professional-grade officiating assistant, tournament management platform, and live scoring system built specifically for modern racket sports. Designed for tournament directors, referees, umpires, players, and spectators, it delivers a premium real-time experience for managing and broadcasting matches across multiple disciplines.
 
-## ✨ Core Features
+Supporting **Badminton, Tennis, Table Tennis, Squash, and Pickleball**, Scorevant combines tournament administration, intelligent scoring automation, live match tracking, spectator broadcasting, and resilient offline support within a single high-performance ecosystem.
 
-- **🏆 Match Engine Architecture**: A robust pure-function rules engine seamlessly integrated with a `useReducer` state machine. It handles disparate logic perfectly—from Tennis (Deuce/Ad, Tiebreaks) to Rally Scoring (Table Tennis, Badminton cap rules) with 0 edge-case bugs and instant O(1) state rollbacks/undos.
-- **🔐 Secure JWT Authentication**: Native NestJS auth endpoints (`/auth/register`, `/auth/login`, `/auth/me`) with bcrypt-hashed passwords, JWT access tokens, and protected tournament/court APIs.
-- **⚡ Realtime Synchronization (Optional)**: Supports **Supabase Realtime** (`supabase.channel`) for live spectator broadcast. If Supabase is not configured, core match/tournament features continue working.
-- **📺 Spectator Display Mode**: A dedicated, live-updating spectator view. Umpires can simply click "Copy Live Link" to share a direct broadcast of the match to any screen in the venue.
-- **🏅 Tournament Management**: End-to-end tournament operations powered by a NestJS backend and React Query. Features include creating tournaments, seeding players, generating brackets, and launching directly into an officiated match directly from the bracket UI.
-- **💾 Offline & Persistence Support**: The officiating engine features automatic offline persistence using a local storage fallback. If an umpire accidentally closes the tab or loses internet connection, the state is fully preserved and seamlessly restored when re-opened.
-- **♿ Production-Ready Accessibility**: Features High Contrast Mode detection (`@media (prefers-contrast: more)`) that intelligently disables glassmorphism for legibility, full `useReducedMotion` support to disable complex animations, screen reader optimization, and compliant focus trapping for modals.
-- **🎬 Premium Cinematic UI**: High-performance Framer Motion animations, "Liquid Gold" design language, Magnetic Buttons, fluid page transitions, and interactive parallax backgrounds.
+---
 
-## 🚀 Tech Stack
+## Overview
 
-### Frontend
-- **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Data & API**: REST API (NestJS) + [React Query](https://tanstack.com/query/latest)
-- **Realtime (Optional)**: [Supabase JS](https://supabase.com/) for spectator broadcast channels
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Routing**: [Wouter](https://github.com/molecula-js/wouter)
+Scorevant was engineered to solve the operational challenges faced during competitive racket sport events. From generating tournament brackets and managing courts to officiating live matches and broadcasting scores in real time, the platform provides a seamless workflow from tournament setup to final results.
 
-### Backend
-- **Framework**: [NestJS](https://nestjs.com/)
-- **Database**: MongoDB (via Mongoose schemas) for users, tournaments, courts, and bracket state
-- **Auth**: JWT (`@nestjs/jwt`) + Passport + bcrypt
+The system is powered by a highly optimized match engine architecture, secure authentication infrastructure, optional realtime synchronization, and a premium accessibility-focused user interface.
 
-## 📂 Project Structure
+---
+
+## Key Features
+
+### Match Engine Architecture
+
+At the core of Scorevant is a robust pure-function rules engine integrated with a `useReducer` state machine.
+
+The engine accurately handles sport-specific scoring systems including:
+
+* Tennis Deuce and Advantage logic
+* Tiebreak scoring
+* Rally scoring formats
+* Badminton point-cap rules
+* Table Tennis match progression
+* Squash and Pickleball scoring variations
+
+Key benefits include:
+
+* Deterministic state transitions
+* Instant O(1) undo and rollback operations
+* Zero known scoring edge-case failures
+* Fully predictable match history reconstruction
+* Offline-safe state recovery
+
+---
+
+### Secure Authentication
+
+Scorevant includes a complete authentication layer powered by NestJS.
+
+Features include:
+
+* User registration and login
+* JWT-based authentication
+* bcrypt password hashing
+* Protected API endpoints
+* User profile retrieval
+* Secure session persistence
+
+Available endpoints:
+
+```http
+POST /auth/register
+POST /auth/login
+GET  /auth/me
+```
+
+All protected requests automatically include JWT authorization tokens through the frontend API layer.
+
+---
+
+### Tournament Management
+
+The platform supports complete tournament lifecycle management.
+
+Administrators can:
+
+* Create tournaments
+* Register participants
+* Seed players
+* Generate brackets
+* Assign courts
+* Manage match queues
+* Launch officiated matches directly from bracket views
+* Track tournament progression in real time
+
+All tournament operations are powered by a NestJS backend and React Query-powered frontend architecture.
+
+---
+
+### Realtime Spectator Broadcasting
+
+Scorevant supports optional realtime synchronization through Supabase Realtime channels.
+
+When enabled, spectators can receive live score updates without refreshing the page.
+
+Features include:
+
+* Instant score propagation
+* Match state synchronization
+* Multi-device broadcasting
+* Venue display support
+* Low-latency spectator experiences
+
+If Supabase is not configured, all tournament and officiating functionality remains fully operational.
+
+---
+
+### Spectator Display Mode
+
+A dedicated spectator experience allows matches to be broadcast on large screens, mobile devices, or remote viewing stations.
+
+Officials can simply:
+
+1. Open a live match
+2. Select **Copy Live Link**
+3. Share the generated URL
+
+The spectator view automatically reflects ongoing score updates and match events.
+
+---
+
+### Offline Persistence & Recovery
+
+Tournament environments are not always connected.
+
+To ensure uninterrupted operation, Scorevant provides automatic persistence using local storage fallbacks.
+
+Benefits include:
+
+* Recovery after accidental tab closure
+* Network interruption resilience
+* Automatic state restoration
+* Seamless continuation of active matches
+* Reduced risk of scoring data loss
+
+---
+
+### Accessibility First
+
+Accessibility is treated as a core platform requirement rather than an afterthought.
+
+Implemented features include:
+
+* High Contrast Mode detection
+* Reduced Motion support
+* Screen reader optimization
+* Keyboard navigation support
+* Accessible modal focus trapping
+* Adaptive visual fallbacks
+
+When users enable high-contrast preferences at the operating system level, advanced visual effects such as glassmorphism are automatically replaced with accessibility-friendly alternatives.
+
+---
+
+### Premium Interface Design
+
+Scorevant utilizes a bespoke **Liquid Gold Design System** focused on clarity, responsiveness, and visual prestige.
+
+Interface highlights include:
+
+* Glassmorphic surfaces
+* Fluid page transitions
+* Magnetic interactive controls
+* Cinematic motion design
+* Responsive layouts
+* Performance-optimized animations
+* Interactive parallax environments
+
+All animations gracefully degrade when reduced-motion preferences are detected.
+
+---
+
+# Technology Stack
+
+## Frontend
+
+| Category         | Technology               |
+| ---------------- | ------------------------ |
+| Framework        | React 19 + Vite          |
+| Language         | TypeScript               |
+| State Management | React Hooks + useReducer |
+| Data Fetching    | React Query              |
+| Realtime         | Supabase JS (Optional)   |
+| Styling          | Tailwind CSS v4          |
+| Animations       | Framer Motion            |
+| Icons            | Lucide React             |
+| Routing          | Wouter                   |
+
+---
+
+## Backend
+
+| Category          | Technology     |
+| ----------------- | -------------- |
+| Framework         | NestJS         |
+| Database          | MongoDB        |
+| ODM               | Mongoose       |
+| Authentication    | JWT + Passport |
+| Password Security | bcrypt         |
+
+---
+
+# Architecture
 
 ```text
 .
-├── frontend/           # Core React application
+├── frontend/
 │   ├── src/
-│   │   ├── components/ # Reusable UI (Buttons, Modals, Scoreboards)
-│   │   ├── pages/      # Landing, Scoreboard, Setup, Tournaments, Spectate
-│   │   ├── hooks/      # useMatchState, useMatchHistory
-│   │   ├── types/      # TypeScript definitions
-│   │   └── lib/        # Utility functions, scoring logic, API client
-│   └── public/         # Static brand assets and logos
-├── backend/            # NestJS API Server
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   ├── types/
+│   │   └── lib/
+│   └── public/
+│
+├── backend/
 │   └── src/
-│       ├── auth/       # Authentication modules
-│       ├── court/      # Court assignment & queues
-│       ├── tournament/ # Tournament bracket generation & match logic
-│       └── schemas/    # MongoDB schemas
-└── README.md           # Documentation
+│       ├── auth/
+│       ├── court/
+│       ├── tournament/
+│       └── schemas/
+│
+└── README.md
 ```
 
-## 🛠️ Getting Started
+---
 
-### Prerequisites
-- Node.js v20+
-- MongoDB instance (for Tournament storage)
-- Supabase project (optional, only for realtime spectator sync)
+# Getting Started
 
-### Installation
-1. Clone the repository
-2. Install dependencies for both frontend and backend:
+## Prerequisites
+
+Before running the project, ensure the following dependencies are available:
+
+* Node.js v20 or newer
+* MongoDB instance
+* Supabase project (optional)
+
+---
+
+## Installation
+
+Clone the repository:
+
 ```bash
-# In frontend directory
-npm install
+git clone <repository-url>
+cd scorevant
+```
 
-# In backend directory
+Install frontend dependencies:
+
+```bash
+cd frontend
 npm install
 ```
 
-### Environment Setup
-Create a `.env` file in the `backend/` directory:
+Install backend dependencies:
+
+```bash
+cd ../backend
+npm install
+```
+
+---
+
+## Backend Configuration
+
+Create a `.env` file inside the `backend/` directory:
+
 ```env
 PORT=3000
+
 MONGODB_URI=mongodb://localhost:27017/SCOREVANT
+
 JWT_SECRET=your-jwt-secret-at-least-32-chars
 
-# Optional: only needed if validating Supabase-issued tokens
+# Optional
 SUPABASE_JWT_SECRET=your-supabase-jwt-secret
 ```
 
-Create a `.env` file in the `frontend/` directory:
+---
+
+## Frontend Configuration
+
+Create a `.env` file inside the `frontend/` directory:
+
 ```env
 VITE_API_BASE_URL=http://localhost:3000
 
-# Optional: only needed for live spectator broadcast
+# Optional
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-### Running Development Servers
-You will need to run both servers concurrently:
+---
 
-**Frontend**:
+## Running the Application
+
+Both services must be running simultaneously.
+
+### Frontend
+
 ```bash
 cd frontend
 npm run dev
 ```
 
-**Backend**:
+### Backend
+
 ```bash
 cd backend
 npm start
 ```
 
-## 🔑 Authentication API
+---
 
-Scorevant now includes built-in authentication routes:
+# Authentication API
 
-- `POST /auth/register` — create account and receive `access_token`
-- `POST /auth/login` — sign in and receive `access_token`
-- `GET /auth/me` — fetch current user profile (requires `Authorization: Bearer <token>`)
+### Register
 
-The frontend stores the JWT in local storage and automatically includes it in protected API requests.
+```http
+POST /auth/register
+```
 
-## 🧪 Quick Verification
+Creates a new account and returns a JWT access token.
 
-1. Start backend and frontend servers.
-2. Open the app and create an account from the **Create one** link.
-3. Sign in and confirm navigation to the dashboard.
-4. Open Tournament pages and verify authenticated API access.
+---
 
-## 🛠️ Troubleshooting
+### Login
 
-- **Login shows "Failed to fetch"**: ensure backend is running on `http://localhost:3000` and `VITE_API_BASE_URL` matches.
-- **MongoDB case-sensitive DB issue on Windows**: use a consistent DB name in `MONGODB_URI` (for example `SCOREVANT`).
-- **Realtime not updating spectators**: verify `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`; realtime is optional and does not block core app usage.
+```http
+POST /auth/login
+```
 
-## 🎨 Design System
-Scorevant uses a bespoke "Liquid Gold" design system that responds automatically to system-level accessibility preferences:
-- **Primary Color**: `#F4C542` (Gold)
-- **Background**: `#000000` (Pure Black)
-- **Glassmorphism**: Layered `backdrop-filter: blur()` utilities (falls back to solid borders in High Contrast Mode)
-- **Motion**: Physics-based springs and cinematic tweens (falls back to snap transitions when Reduced Motion is enabled by the OS)
+Authenticates an existing user and returns a JWT access token.
+
+---
+
+### Current User
+
+```http
+GET /auth/me
+```
+
+Requires:
+
+```http
+Authorization: Bearer <token>
+```
+
+Returns the authenticated user's profile information.
+
+---
+
+# Verification Checklist
+
+After setup:
+
+1. Start backend and frontend services.
+2. Open the application.
+3. Create a new account using **Create One**.
+4. Sign in successfully.
+5. Confirm redirection to the dashboard.
+6. Create or access a tournament.
+7. Verify authenticated API requests.
+8. Launch a match and validate scoring functionality.
+9. Test spectator mode and live-link sharing.
+
+---
+
+# Troubleshooting
+
+### Login Displays "Failed to Fetch"
+
+Verify:
+
+* Backend is running
+* API URL matches `VITE_API_BASE_URL`
+* Port `3000` is accessible
+
+---
+
+### MongoDB Database Naming Issues
+
+Windows environments may behave differently with inconsistent database naming.
+
+Use a single database name consistently:
+
+```env
+SCOREVANT
+```
+
+---
+
+### Spectator Updates Not Synchronizing
+
+Verify:
+
+```env
+VITE_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY
+```
+
+Realtime functionality is optional and does not affect core platform features.
+
+---
+
+# Design System
+
+### Liquid Gold
+
+| Property           | Value                 |
+| ------------------ | --------------------- |
+| Primary Color      | `#F4C542`             |
+| Background         | `#000000`             |
+| Accent Style       | Liquid Gold           |
+| Motion System      | Physics-Based Springs |
+| Accessibility Mode | Automatic Adaptation  |
+
+### Visual Principles
+
+* Premium competitive sports aesthetic
+* Minimal latency perception
+* Accessibility-first interactions
+* Responsive by default
+* Motion with graceful degradation
+* High readability under tournament conditions
+
+---
+
+# Vision
+
+Scorevant aims to become the definitive digital officiating and tournament operations platform for racket sports. By combining intelligent match management, professional-grade officiating tools, resilient offline support, realtime broadcasting, and a modern user experience, it provides everything required to run competitive events with confidence and precision.
